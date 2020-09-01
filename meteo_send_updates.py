@@ -9,7 +9,8 @@ from time import sleep
 
 camera = PiCamera()
 
-url = "https://meteo-station.herokuapp.com/data"
+url_data = "https://meteo-station.herokuapp.com/data"
+url_photo = "https://meteo-station.herokuapp.com/photo"
 interval = 120 #120 seconds (2 mins)
 if len(sys.argv) > 1:
     interval = sys.argv[1]
@@ -42,7 +43,7 @@ while True:
             "hum": hum,
             "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S")
         }
-        response = requests.post(url, json = data)
+        response = requests.post(url_data, json = data)
         if response.status_code is 200:
             print("Data sent correctly")
         else:
@@ -51,11 +52,17 @@ while True:
         print("error while retriving data from bme280")
 
     try:
+        photo_path = '/home/pi/Desktop/sanpshot.jpg'
         camera.start_preview()
-        for i in range(5):
-            sleep(5)
-            camera.capture('/home/pi/Desktop/image%s.jpg' % i)
+        sleep(5)
+        camera.capture(photo_path)
         camera.stop_preview()
+        files = {'image': open(photo_path, 'rb')}
+        response = requests.post(url_photo, files = files)
+        if response.status_code is 200:
+            print("Photo sent correctly to meteo-server")
+        else:
+            print("Photo sending error")
     except:    
         print("error while sending the photo update")
 
