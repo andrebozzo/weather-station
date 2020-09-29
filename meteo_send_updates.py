@@ -3,7 +3,7 @@ import bme280
 import sys
 import time
 import requests
-import datetime
+from datetime import datetime
 from picamera import PiCamera
 from time import sleep
 
@@ -11,10 +11,14 @@ camera = PiCamera()
 
 url_data = "https://meteo-station.herokuapp.com/data"
 url_photo = "https://meteo-station.herokuapp.com/photo"
+
+#url_data = "http://192.168.1.80:8080/data"
+#url_photo = "http://192.168.1.80:8080/photo"
+
 interval = 120 #120 seconds (2 mins)
 if len(sys.argv) > 1:
-    interval = sys.argv[1]
-
+    interval =int(sys.argv[1])
+print("Updates will be sent every %d seconds, every %.2f minutes" % (interval, interval/60))
 port = 1
 address = 0x76
 bus = smbus2.SMBus(port)
@@ -27,43 +31,43 @@ calibration_params = bme280.load_calibration_params(bus, address)
 
 # the compensated_reading class has the following attributes
 while True:
-    try:
-        data = bme280.sample(bus, address, calibration_params)
-        # there is a handy string representation too
-        print("Receiving data from bme280...")
-        print(data)
-        data_id = data.id
-        ts = datetime.now()
-        temp = round(data.temperature, 1)
-        press = round(data.pressure, 4)
-        hum = round(data.humidity, 2)
-        data = { 
-            "temp": temp,
-            "press": press,
-            "hum": hum,
-            "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S")
-        }
-        response = requests.post(url_data, json = data)
-        if response.status_code is 200:
-            print("Data sent correctly")
-        else:
-            print("Server errror")
-    except:
-        print("error while retriving data from bme280")
+    
+    data = bme280.sample(bus, address, calibration_params)
+    # there is a handy string representation too
+    print("Receiving data from bme280...")
+    print(data)
+    data_id = data.id
+    ts = datetime.now()
+    temp = round(data.temperature, 1)
+    press = round(data.pressure, 4)
+    hum = round(data.humidity, 2)
+    data = { 
+        "temp": temp,
+        "press": press,
+        "hum": hum,
+        "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S")
+    }
+    response = requests.post(url_data, json = data)
+    if response.status_code is 200:
+        print("Data sent correctly")
+    else:
+        print("Server errror")
+    #except:
+     #   print("error while retriving data from bme280")
 
     try:
-        photo_path = '/home/pi/Desktop/sanpshot.jpg'
+        photo_path = '/home/pi/Desktop/snapshot.jpg'
         camera.start_preview()
         sleep(5)
         camera.capture(photo_path)
         camera.stop_preview()
-        files = {'image': open(photo_path, 'rb')}
+        files = {'photo': open(photo_path, 'rb')}
         response = requests.post(url_photo, files = files)
         if response.status_code is 200:
             print("Photo sent correctly to meteo-server")
         else:
             print("Photo sending error")
-    except:    
+    except:   
         print("error while sending the photo update")
 
     time.sleep(interval)
