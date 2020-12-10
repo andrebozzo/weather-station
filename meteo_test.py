@@ -12,14 +12,16 @@ calibration_params = bme280.load_calibration_params(bus, address)
 data = bme280.sample(bus, address, calibration_params)
 
 # the compensated_reading class has the following attributes
-print(data.id)
+'''print(data.id)
 print(data.timestamp)
 print(data.temperature)
 print(data.pressure)
 print(data.humidity)
-
+'''
+print("BME280 (temp, hum, press) -> ")
 # there is a handy string representation too
 print(data)
 
 sonda_temp = DS18B20()
-print("SONDA TEMP: {}".format(sonda_temp.read_temp()))
+print("DS18B20 (sonda temp) ->")
+print(sonda_temp.read_temp())

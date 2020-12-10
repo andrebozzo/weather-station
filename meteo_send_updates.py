@@ -3,6 +3,7 @@ import bme280
 import sys
 import time
 import requests
+from ds18b20_therm import DS18B20
 from datetime import datetime
 from picamera import PiCamera
 from time import sleep
@@ -27,22 +28,26 @@ calibration_params = bme280.load_calibration_params(bus, address)
 
 # the sample method will take a single reading and return a
 # compensated_reading object
-
+temp_sonda = DS18B20()
 
 # the compensated_reading class has the following attributes
 while True:
-    
+
+    print("Receiving data from bme280...")
     data = bme280.sample(bus, address, calibration_params)
     # there is a handy string representation too
-    print("Receiving data from bme280...")
     print(data)
     data_id = data.id
     ts = datetime.now()
     temp = round(data.temperature, 1)
     press = round(data.pressure, 4)
     hum = round(data.humidity, 2)
+    print("Receiving data from ds18b20...")
+    temp_s = temp_sonda.read_temp()
+    # packaging everything
     data = { 
         "temp": temp,
+        "temp_s": temp_s,
         "press": press,
         "hum": hum,
         "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S")
