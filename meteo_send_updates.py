@@ -58,7 +58,7 @@ while True:
     else:
         print("Error in sending data update")
         print(response.status_code)
-        print(response.text())
+        print(response.text)
     #except:
      #   print("error while retriving data from bme280")
 
@@ -75,7 +75,7 @@ while True:
         else:
             print("Photo sending error:")
             print(response.status_code)
-            print(response.text())
+            print(response.text)
     except:   
         print("error while sending the photo update")
 
