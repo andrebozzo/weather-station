@@ -8,7 +8,7 @@ from datetime import datetime
 from picamera import PiCamera
 from time import sleep
 
-camera = PiCamera()
+camera = PiCamera(resolution=(1280, 720))
 
 url_data = "https://meteo-station.herokuapp.com/data"
 url_photo = "https://meteo-station.herokuapp.com/photo"
@@ -64,6 +64,7 @@ while True:
 
     try:
         photo_path = '/home/pi/Desktop/snapshot.jpg'
+        camera.awb_mode = "sun"
         camera.start_preview()
         sleep(5)
         camera.capture(photo_path)
