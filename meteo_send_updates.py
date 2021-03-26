@@ -56,7 +56,7 @@ while True:
     if response.status_code is 200:
         print("Data sent correctly")
     else:
-        print("Error in sending data update: "+response.status_code)
+        print("Error in sending data update: "+str(response.status_code))
         print(response.text())
     #except:
      #   print("error while retriving data from bme280")
@@ -72,7 +72,8 @@ while True:
         if response.status_code is 200:
             print("Photo sent correctly to meteo-server")
         else:
-            print("Photo sending error")
+            print("Photo sending error: "+ str(response.status_code))
+            print(response.text())
     except:   
         print("error while sending the photo update")
 
