@@ -44,7 +44,7 @@ while True:
     hum = round(data.humidity, 2)
     print("Receiving data from ds18b20...")
     temp_s = temp_sonda.read_temp()
-    # packaging everything
+    # packing everything
     data = { 
         "temp": temp,
         "temp_s": temp_s,
@@ -56,7 +56,8 @@ while True:
     if response.status_code is 200:
         print("Data sent correctly")
     else:
-        print("Server errror")
+        print("Error in sending data update: "+response.status_code)
+        print(response.text())
     #except:
      #   print("error while retriving data from bme280")
 
