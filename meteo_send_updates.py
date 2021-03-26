@@ -52,7 +52,7 @@ while True:
         "hum": hum,
         "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S")
     }
-    response = requests.post(url_data, json = data)
+    response = requests.post(url_data+"?write_key=ciccione88", json = data)
     if response.status_code is 200:
         print("Data sent correctly")
     else:
@@ -68,7 +68,7 @@ while True:
         camera.capture(photo_path)
         camera.stop_preview()
         files = {'photo': open(photo_path, 'rb')}
-        response = requests.post(url_photo, files = files)
+        response = requests.post(url_photo+"?write_key=ciccione88", files = files)
         if response.status_code is 200:
             print("Photo sent correctly to meteo-server")
         else:
