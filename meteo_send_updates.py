@@ -7,6 +7,8 @@ from ds18b20_therm import DS18B20
 from datetime import datetime
 from picamera import PiCamera
 from time import sleep
+from forecaster import ZambrettiForecaster
+from forecaster import Rilevazione
 
 url_data = "https://meteo-station.herokuapp.com/data"
 url_photo = "https://meteo-station.herokuapp.com/photo"
@@ -28,6 +30,7 @@ calibration_params = bme280.load_calibration_params(bus, address)
 # compensated_reading object
 temp_sonda = DS18B20()
 camera = PiCamera(resolution=(1080, 920))
+forecasterZ = ZambrettiForecaster(interval=interval)
 # the compensated_reading class has the following attributes
 while True:
 
@@ -41,14 +44,21 @@ while True:
     hum = round(data.humidity, 2)
     print("Receiving data from ds18b20...")
     temp_s = temp_sonda.read_temp()
+    
+    r = Rilevazione(temp, temp_s, press, hum, ts.strftime("%m-%d-%Y, %H:%M:%S"))
+    forecasterZ.addData(r)
+    forecas = forecasterZ.forecast()
     # packing everything
+
     data = { 
         "temp": temp,
         "temp_s": temp_s,
         "press": press,
         "hum": hum,
-        "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S")
+        "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S"),
+        "forecast": forecas
     }
+    
     response = requests.post(url_data+"?write_key=ciccione88", json = data)
     if response.status_code is 200:
         print("Data sent correctly")
