@@ -55,10 +55,8 @@ while True:
     }
     try:
     	response = requests.post(url_data+"?write_key=ciccione88", json = data)
-    	if response.status_code is 200:
-            print("Data sent correctly")
-	else:
-            print("Error in sending data update")
+    	if not response.status_code is 200:
+            print("Error while sending data")
             print(response.status_code)
             print(response.text)
     except:
