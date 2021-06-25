@@ -10,8 +10,8 @@ from time import sleep
 from forecaster import ZambrettiForecaster
 from forecaster import Rilevazione
 
-url_data = "https://meteo-station.herokuapp.com/data"
-url_photo = "https://meteo-station.herokuapp.com/photo"
+url_data = "http://www.andrezz.it/data"
+url_photo = "http://www.andrezz.it/photo"
 
 #url_data = "http://192.168.1.80:8080/data"
 #url_photo = "http://192.168.1.80:8080/photo"
@@ -30,7 +30,7 @@ calibration_params = bme280.load_calibration_params(bus, address)
 # compensated_reading object
 temp_sonda = DS18B20()
 camera = PiCamera(resolution=(1080, 920))
-forecasterZ = ZambrettiForecaster(interval=interval)
+
 # the compensated_reading class has the following attributes
 while True:
 
@@ -44,30 +44,25 @@ while True:
     hum = round(data.humidity, 2)
     print("Receiving data from ds18b20...")
     temp_s = temp_sonda.read_temp()
-    
-    r = Rilevazione(temp, temp_s, press, hum, ts.strftime("%m-%d-%Y, %H:%M:%S"))
-    forecasterZ.addData(r)
-    forecas = forecasterZ.forecast()
     # packing everything
 
-    data = { 
+    data = {
         "temp": temp,
         "temp_s": temp_s,
         "press": press,
         "hum": hum,
-        "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S"),
-        "forecast": forecas
+        "timestamp": ts.strftime("%m-%d-%Y, %H:%M:%S")
     }
-    
-    response = requests.post(url_data+"?write_key=ciccione88", json = data)
-    if response.status_code is 200:
-        print("Data sent correctly")
-    else:
-        print("Error in sending data update")
-        print(response.status_code)
-        print(response.text)
-    #except:
-     #   print("error while retriving data from bme280")
+    try:
+    	response = requests.post(url_data+"?write_key=ciccione88", json = data)
+    	if response.status_code is 200:
+            print("Data sent correctly")
+	else:
+            print("Error in sending data update")
+            print(response.status_code)
+            print(response.text)
+    except:
+        print("Error cannot connct to " + url_data)
 
     try:
         photo_path = '/home/pi/Desktop/snapshot.jpg'

@@ -1,8 +1,4 @@
 import math
-import numpy as np
-import pandas as pd
-import statsmodels.tsa.seasonal as seasonal
-
 class Rilevazione:
     def __init__(self, temp, temp_sonda, press, hum, timestamp):
         self.temp = temp
@@ -16,7 +12,7 @@ class ZambrettiForecaster:
     def __init__(self, h=981, sample_interval_seconds=1800):
         self.sample_interval_seconds = sample_interval_seconds
         self.n_sample = 0
-        self.n_sample_per_hour = math.floor(self.sample_interval_seconds*1.0 / 3600)
+        self.n_sample_per_hour = math.floor(3600*1.0/self.sample_interval_seconds)
         self.h = h
         self.pressList = []
         self.timestampList = []
@@ -30,8 +26,8 @@ class ZambrettiForecaster:
         self.tempList.append(rilevazione.temp)
         self.humList.append(rilevazione.hum)
         self.n_sample += 1
-        
-        if self.n_sample > (3*n_sample_per_hour):#keep the trend of 3 hours
+        self.tempSondaList.append(rilevazione.temp_sonda)
+        if self.n_sample > (3*self.n_sample_per_hour):#keep the trend of 3 hours
             self.pressList.pop(0)
             self.timestampList.pop(0)
             self.tempList.pop(0)
