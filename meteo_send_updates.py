@@ -58,7 +58,6 @@ while True:
     	if not response.status_code is 200:
             print("Error while sending data")
             print(response.status_code)
-            print(response.text)
     except:
         print("Error cannot connct to " + url_data)
 
